@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/jlundan/chori/issues"
   },
-  "homepage": "https://github.com/jlundan/chori#readme"
+  "homepage": "https://github.com/jlundan/chori#readme",
+  "dependencies": {
+    "@types/node": "^10.12.2"
+  }
 }
