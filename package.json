@@ -17,6 +17,7 @@
     "url": "https://github.com/jlundan/chori/issues"
   },
   "homepage": "https://github.com/jlundan/chori#readme",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "reflect-metadata": "^0.1.12"
   },
