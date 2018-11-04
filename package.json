@@ -16,7 +16,9 @@
     "url": "https://github.com/jlundan/chori/issues"
   },
   "homepage": "https://github.com/jlundan/chori#readme",
-  "dependencies": {},
+  "dependencies": {
+    "reflect-metadata": "^0.1.12"
+  },
   "devDependencies": {
     "@types/node": "^10.12.2"
   }
