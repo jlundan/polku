@@ -99,6 +99,7 @@ export class RouterRegistry {
     }
 
     private constructor() {
+        this._defaultRouterImplementation = null;
     }
 
     /**
@@ -111,5 +112,9 @@ export class RouterRegistry {
 
     getDefaultRouterImplementation(): RouterImplementation {
         return this._defaultRouterImplementation;
+    }
+
+    get hasRouter() {
+        return this._defaultRouterImplementation !== null;
     }
 }

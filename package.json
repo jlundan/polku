@@ -19,7 +19,10 @@
   "homepage": "https://github.com/jlundan/chori#readme",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "reflect-metadata": "^0.1.12"
+    "reflect-metadata": "^0.1.12",
+    "express": "^4.16.4",
+    "body-parser": "^1.18.3",
+    "helmet": "^3.13.0"
   },
   "devDependencies": {
     "@types/node": "^10.12.2",

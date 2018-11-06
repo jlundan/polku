@@ -1,8 +1,13 @@
-import {RouterRegistry} from "./routing";
-import {ExpressRouter} from "./express/express-router";
 import * as path from "path";
 import * as fs from "fs";
+import * as express from "express";
+import * as helmet from "helmet";
+import * as bodyParser from "body-parser";
+import * as http from "http";
+
+import {RouterRegistry} from "./routing";
 import {ApplicationContext} from "./application-context";
+import {ExpressRouter} from "./express/chori-express";
 
 export interface ComponentScanOptions {
     base: string;
@@ -20,25 +25,9 @@ export class Application {
         this._applicationContext = ApplicationContext.getInstance();
     }
 
-    /**
-     * Enable express-router
-     * @param engine
-     * @param config
-     */
-    withRouting(engine: string, config?: any): Application {
-        let router = new ExpressRouter(config);
-        this._routerRegistry.registerDefaultRouterImplementation(router);
-
-        router.beforeComponentScan();
-        this.scanComponents();
-        router.afterComponentScan();
-
-        return this;
-    }
-
     private scanComponents(){
         const scanPath = this._options && this._options.componentScan && this._options.componentScan.base
-            ? this._options.componentScan.base : path.join(__dirname, "..", "src");
+            ? this._options.componentScan.base : path.join(__dirname, "..", "..", "src");
 
         let components = this.getComponents(scanPath, {
             controllers: [],
@@ -86,5 +75,27 @@ export class Application {
             }
         }
         return components;
+    }
+
+    public start(port?: number){
+        if(!this._routerRegistry.hasRouter) {
+            let router = new ExpressRouter({
+                beforeRouterSetup: (app: express.Application)=>{
+                    app.use(helmet());
+                    app.use(bodyParser.json());
+                },
+                afterRouterSetup: (app: express.Application) => {
+                    let server = http.createServer(app);
+                    server.listen(port || 3000, () => {
+                        console.log("Service listening on port: " + port || 3000);
+                    });
+                }
+            });
+
+            this._routerRegistry.registerDefaultRouterImplementation(router);
+            router.beforeComponentScan();
+            this.scanComponents();
+            router.afterComponentScan();
+        }
     }
 }
