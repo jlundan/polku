@@ -1,4 +1,4 @@
-import {ComponentScope} from "./application-configuration";
+import {ComponentScope, ComponentType} from "./application-configuration";
 
 export class ApplicationContext {
     private static _instance;
@@ -30,8 +30,18 @@ export class ApplicationContext {
         return cmps;
     }
 
-    registerComponent(source: any, name: string, scope: ComponentScope) {
-        this._components.set(name, new ComponentWrapper(source, scope));
+    registerComponent(source: any, name: string, scope: ComponentScope, type: ComponentType) {
+        switch (type) {
+            case ComponentType.SERVICE: {
+                this._components.set(name, new ComponentWrapper(source, scope));
+                break;
+            }
+            case ComponentType.CONTROLLER: {
+                new source();
+                break;
+            }
+            default: break;
+        }
     }
 }
 
