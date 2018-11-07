@@ -5,7 +5,7 @@ import * as helmet from "helmet";
 import * as bodyParser from "body-parser";
 import * as http from "http";
 
-import {RouterRegistry} from "./routing";
+import {RouterRegistry} from "./router-registry";
 import {ApplicationContext} from "./application-context";
 import {ExpressRouter} from "./express/chori-express";
 import {ComponentType} from "./application-configuration";
