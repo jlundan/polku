@@ -50,8 +50,6 @@ export function Controller(options?: ControllerDecoratorOptions): ClassDecorator
             return newObj;
         };
 
-
-
         // make instanceof work
         f.prototype = original.prototype;
 
@@ -75,7 +73,7 @@ export function Route(options: RouteDecoratorOptions) {
         topicFns.push((obj:any) => {
             let controllerPrefix = Reflect.getMetadata('prefix', target);
             let routePath = options.path;
-            RouterRegistry.getInstance().getDefaultRouterImplementation()
+            RouterRegistry.getInstance().getRouter()
                 .registerRoute(path.join(controllerPrefix, routePath), options.method, obj, propertyKey);
         });
     }
@@ -106,15 +104,11 @@ export class RouterRegistry {
      *
      * @param routerImplementation The router implementation which will be used by the Route annotations to register routes
      */
-    registerDefaultRouterImplementation(routerImplementation: RouterImplementation) {
+    registerRouter(routerImplementation: RouterImplementation) {
         this._defaultRouterImplementation = routerImplementation;
     }
 
-    getDefaultRouterImplementation(): RouterImplementation {
+    getRouter(): RouterImplementation {
         return this._defaultRouterImplementation;
-    }
-
-    get hasRouter() {
-        return this._defaultRouterImplementation !== null;
     }
 }
