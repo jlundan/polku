@@ -1,4 +1,4 @@
-import {ComponentScope, ComponentType} from "./application-configuration";
+import {ComponentScope, ComponentType} from "./decorators";
 
 export class ApplicationContext {
     private static _instance;

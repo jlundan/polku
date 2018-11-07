@@ -1,5 +1,5 @@
 import * as express from "express";
-import {RouteContext} from "../routing";
+import {RouteContext} from "../decorators";
 import {RouterImplementation} from "../router-registry";
 
 export type BeforeRouterSetup = (application: express.Application) => any;
