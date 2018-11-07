@@ -11,6 +11,11 @@ export enum ComponentScope {
     PROTOTYPE
 }
 
+export enum ComponentType {
+    CONTROLLER,
+    SERVICE
+}
+
 export interface ServiceOptions {
     name: string;
     scope?: ComponentScope
