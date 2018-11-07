@@ -8,94 +8,137 @@ import * as http from "http";
 import {RouterRegistry} from "./routing";
 import {ApplicationContext} from "./application-context";
 import {ExpressRouter} from "./express/chori-express";
+import {ComponentType} from "./application-configuration";
 
-export interface ComponentScanOptions {
-    base: string;
-}
 export interface ApplicationOptions {
-    componentScan?: ComponentScanOptions
+    componentScan?: string
 }
 
 export class Application {
     private _routerRegistry;
-    private _applicationContext: ApplicationContext;
+    private readonly _applicationContext: ApplicationContext;
 
     constructor(private _options?: ApplicationOptions){
         this._routerRegistry = RouterRegistry.getInstance();
         this._applicationContext = ApplicationContext.getInstance();
     }
 
-    private scanComponents(){
-        const scanPath = this._options && this._options.componentScan && this._options.componentScan.base
-            ? this._options.componentScan.base : path.join(__dirname, "..", "..", "src");
+    public start(port?: number){
+        let scannedComponents;
+        let router = this._routerRegistry.getRouter();
 
-        let components = this.getComponents(scanPath, {
-            controllers: [],
-            services: []
-        });
-
-        for(let service of components.services) {
-            this._applicationContext.registerComponent(
-                service,
-                Reflect.getMetadata('Symbol(ComponentName)', service),
-                Reflect.getMetadata('Symbol(ComponentScope)', service));
+        if(!router) {
+            router = ApplicationHelpers.createDefaultRouter(port);
+            this._routerRegistry.registerRouter(router);
         }
 
-        for(let controller of components.controllers) {
-            new controller();
-        }
+        ApplicationHelpers.callRouterHook(router, "beforeComponentScan");
+        scannedComponents = this.scanComponents(ApplicationHelpers.resolveScanPath(this._options));
+        ApplicationHelpers.callRouterHook(router, "afterComponentScan");
+
+        ApplicationContextHelpers.registerComponents(scannedComponents, this._applicationContext);
     }
 
-    private getComponents (dir, components){
+    private scanComponents (dir){
+        let components = [];
         let files = fs.readdirSync(dir);
-        for (let i in files){
-            let name = path.join(dir, files[i]);
-            if (fs.statSync(name).isDirectory()){
-                this.getComponents(name, components);
+        for (let file of files){
+            let filePath = path.join(dir, file);
+            if (fs.statSync(filePath).isDirectory()){
+                components = components.concat(this.scanComponents(filePath));
             } else {
-                if(name.endsWith(".js")) {
-                    let exports: any = require(name);
-                    Object.keys(exports).forEach( (objectKey: string) => {
-                        try {
-                            switch (Reflect.getMetadata('Symbol(ComponentType)', exports[objectKey])) {
-                                case "Controller" : {
-                                    components.controllers.push(exports[objectKey]);
-                                    break;
-                                }
-                                case "Service" : {
-                                    components.services.push(exports[objectKey]);
-                                    break;
-                                }
-                            }
-
-                        }catch (e) {
-                        }
-                    });
-                }
+                components = components.concat(this.getComponentSources(filePath));
             }
         }
         return components;
     }
 
-    public start(port?: number){
-        if(!this._routerRegistry.hasRouter) {
-            let router = new ExpressRouter({
-                beforeRouterSetup: (app: express.Application)=>{
-                    app.use(helmet());
-                    app.use(bodyParser.json());
-                },
-                afterRouterSetup: (app: express.Application) => {
-                    let server = http.createServer(app);
-                    server.listen(port || 3000, () => {
-                        console.log("Service listening on port: " + port || 3000);
-                    });
-                }
-            });
+    private getComponentSources(filePath) {
+        if(!filePath.endsWith(".js")) {
+            return [];
+        }
 
-            this._routerRegistry.registerDefaultRouterImplementation(router);
-            router.beforeComponentScan();
-            this.scanComponents();
-            router.afterComponentScan();
+        let exports;
+        try{
+            exports = require(filePath);
+        } catch (e) {
+            return [];
+        }
+
+        let scannedExports = [];
+        Object.keys(exports).forEach( (objectKey: string) => {
+            try {
+                switch (Reflect.getMetadata('Symbol(ComponentType)', exports[objectKey])) {
+                    case "Controller" : {
+                        scannedExports.push(new ScannedComponentSource(exports[objectKey], ComponentType.CONTROLLER));
+                        break;
+                    }
+                    case "Service" : {
+                        scannedExports.push(new ScannedComponentSource(exports[objectKey], ComponentType.SERVICE));
+                        break;
+                    }
+                    default: break
+                }
+
+            }catch (e) {
+                console.log(e);
+            }
+        });
+
+        return scannedExports;
+    }
+}
+
+class ScannedComponentSource {
+    constructor(private _componentSource: any, private _componentType: ComponentType) {
+    }
+
+    get componentSource() {
+        return this._componentSource;
+    }
+
+    get componentType() {
+        return this._componentType;
+    }
+}
+
+class ApplicationHelpers {
+    static resolveScanPath (options?: ApplicationOptions){
+        if(!options || !options.componentScan) {
+            return path.join(__dirname, "..", "..", "src");
+        }
+
+        return options.componentScan;
+    }
+
+    static createDefaultRouter(port: number){
+        return new ExpressRouter({
+            beforeRouterSetup: (app: express.Application)=>{
+                app.use(helmet());
+                app.use(bodyParser.json());
+            },
+            afterRouterSetup: (app: express.Application) => {
+                let server = http.createServer(app);
+                server.listen(port || 3000, () => {
+                    console.log("Service listening on port: " + port || 3000);
+                });
+            }
+        });
+    }
+
+    static callRouterHook(router, hook: string){
+        router[hook]();
+    }
+}
+
+class ApplicationContextHelpers {
+    static registerComponents (scannedComponents, applicationContext) {
+        for(let scannedComponent of scannedComponents) {
+            applicationContext.registerComponent(
+                scannedComponent.componentSource,
+                Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource),
+                Reflect.getMetadata('Symbol(ComponentScope)', scannedComponent.componentSource),
+                scannedComponent.componentType);
         }
     }
 }
