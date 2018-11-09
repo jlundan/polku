@@ -1,62 +1,23 @@
 import "reflect-metadata";
 import * as path from "path";
-import {ApplicationContext} from "./application-context";
+import {ApplicationContext, ComponentScope} from "./application-context";
 import {RouterRegistry} from "./router-registry";
-
-export interface RouteContext {
-    request: Request;
-}
-
-export interface Request {
-    body: any;
-    params: [string, string][];
-    query: [string, string][];
-    headers: [string, string][];
-    path: string;
-}
 
 export interface ControllerDecoratorOptions {
     prefix: string
 }
 
 export function Controller(options?: ControllerDecoratorOptions): ClassDecorator {
-    if(!options) {
-        options = {
-            prefix: "/"
-        }
-    }
     return (target: any) => {
-        let original = target;
+        let extendedConstructor = ObjectUtils.extendConstructor(
+            target,
+            ControllerUtils.parseOptions(options),
+            ControllerUtils.afterObjectCreationHandler
+        );
 
-        function construct(constructor, args, injectArgs) {
-            let c : any = function () {
-                return constructor.apply(this, injectArgs.concat(args));
-            };
-            c.prototype = constructor.prototype;
-            return new c();
-        }
+        Reflect.defineMetadata('Symbol(ComponentType)', "Controller", extendedConstructor);
 
-        let f : any = function (...args) {
-
-            let newObj = construct(original, args, ApplicationContext.getInstance().getComponents(Reflect.getMetadata('Symbol(InjectArgs)', target)));
-
-            Reflect.defineMetadata('prefix', options.prefix, target.prototype);
-            let topicFns: Array<(any) => void> = Reflect.getMetadata("topicCallbacks", target.prototype);
-            if (topicFns) {
-                topicFns.forEach((fn) => {
-                    fn(newObj)
-                });
-            }
-
-            return newObj;
-        };
-
-        // make instanceof work
-        f.prototype = original.prototype;
-
-        Reflect.defineMetadata('Symbol(ComponentType)', "Controller", f);
-
-        return f;
+        return extendedConstructor;
     }
 }
 
@@ -80,22 +41,6 @@ export function Route(options: RouteDecoratorOptions) {
     }
 }
 
-export function ApplicationConfiguration(): ClassDecorator {
-    return (target: any) => {
-        return makeConstructor(target);
-    }
-}
-
-export enum ComponentScope {
-    SINGLETON,
-    PROTOTYPE
-}
-
-export enum ComponentType {
-    CONTROLLER,
-    SERVICE
-}
-
 export interface ServiceOptions {
     name: string;
     scope?: ComponentScope
@@ -103,7 +48,7 @@ export interface ServiceOptions {
 
 export function Service(options?: ServiceOptions): ClassDecorator {
     return (target: any) => {
-        let constr = makeConstructor(target);
+        let constr = ObjectUtils.extendConstructor(target);
 
         Reflect.defineMetadata('Symbol(ComponentType)', "Service", constr);
         Reflect.defineMetadata('Symbol(ComponentName)', options.name, constr);
@@ -113,9 +58,9 @@ export function Service(options?: ServiceOptions): ClassDecorator {
     }
 }
 
-export function Bean(options?: any) {
-    return function (target: any, propertyKey: string) {
-
+export function ApplicationConfiguration(): ClassDecorator {
+    return (target: any) => {
+        return ObjectUtils. extendConstructor(target);
     }
 }
 
@@ -125,29 +70,54 @@ export function Inject(name?: string) {
     }
 }
 
-function makeConstructor(original: any, metadataKeys?: [string,string][]) {
-    function construct(constructor, args) {
+export function Bean(options?: any) {
+    return function (target: any, propertyKey: string) {
+
+    }
+}
+
+class ControllerUtils {
+    static parseOptions(original: ControllerDecoratorOptions) : ControllerDecoratorOptions{
+        return original || {
+            prefix: "/"
+        }
+    }
+
+    static afterObjectCreationHandler(target, options, newObject) {
+        Reflect.defineMetadata('prefix', options.prefix, target.prototype);
+        let topicFns: Array<(any) => void> = Reflect.getMetadata("topicCallbacks", target.prototype);
+        if (topicFns) {
+            topicFns.forEach((fn) => {
+                fn(newObject)
+            });
+        }
+    }
+}
+
+class ObjectUtils {
+    static construct(constructor: any, args: any, injectArgs?: any) {
         let c : any = function () {
-            return constructor.apply(this, args);
+            return constructor.apply(this, injectArgs ? injectArgs.concat(args) : args);
         };
         c.prototype = constructor.prototype;
         return new c();
     }
 
-    let f : any = function (...args) {
-        let newObj = construct(original, args);
+    static extendConstructor(originalConstructor: any, options?, afterObjectCreation?) {
+        let extendingConstructor : any = function (...args) {
+            let injectArgs = Reflect.getMetadata('Symbol(InjectArgs)', originalConstructor);
+            let injectedComponents = ApplicationContext.getInstance().getComponents(injectArgs);
+            let newObject = ObjectUtils.construct(originalConstructor, args, injectedComponents);
 
-        if(metadataKeys) {
-            metadataKeys.forEach((value: [string, string])=>{
-                Reflect.defineMetadata(value[0], value[1], original.prototype);
-            })
-        }
+            if(afterObjectCreation) {
+                afterObjectCreation(originalConstructor, options, newObject);
+            }
 
-        return newObj;
-    };
+            return newObject;
+        };
 
-    // make instanceof work
-    f.prototype = original.prototype;
-    //Reflect.defineMetadata('Symbol(ComponentType)', type, f);
-    return f;
+        // make instanceof work
+        extendingConstructor.prototype = originalConstructor.prototype;
+        return extendingConstructor;
+    }
 }

@@ -6,9 +6,8 @@ import * as bodyParser from "body-parser";
 import * as http from "http";
 
 import {RouterRegistry} from "./router-registry";
-import {ApplicationContext} from "./application-context";
+import {ApplicationContext, ComponentType} from "./application-context";
 import {ExpressRouter} from "./express/chori-express";
-import {ComponentType} from "./decorators";
 
 export interface ApplicationOptions {
     componentScan?: string

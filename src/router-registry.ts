@@ -1,3 +1,15 @@
+export interface RouteContext {
+    request: Request;
+}
+
+export interface Request {
+    body: any;
+    params: [string, string][];
+    query: [string, string][];
+    headers: [string, string][];
+    path: string;
+}
+
 export interface RouterImplementation {
     registerRoute(url: string, method: string, controller:any, routeHandler: string);
     beforeComponentScan(): void;

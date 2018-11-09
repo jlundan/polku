@@ -1,4 +1,12 @@
-import {ComponentScope, ComponentType} from "./decorators";
+export enum ComponentType {
+    CONTROLLER,
+    SERVICE
+}
+
+export enum ComponentScope {
+    SINGLETON,
+    PROTOTYPE
+}
 
 export class ApplicationContext {
     private static _instance;
