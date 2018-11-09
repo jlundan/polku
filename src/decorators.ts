@@ -8,17 +8,28 @@ export interface ControllerDecoratorOptions {
 }
 
 export function Controller(options?: ControllerDecoratorOptions): ClassDecorator {
+    let afterObjectCreationHandler = function(target, options, newObject) {
+        Reflect.defineMetadata('prefix', options.prefix, target.prototype);
+        let topicFns: Array<(any) => void> = Reflect.getMetadata("topicCallbacks", target.prototype);
+        if (topicFns) {
+            topicFns.forEach((fn) => {
+                fn(newObject)
+            });
+        }
+    };
+
     return (target: any) => {
         let extendedConstructor = ObjectUtils.extendConstructor(
             target,
             ControllerUtils.parseOptions(options),
-            ControllerUtils.afterObjectCreationHandler
+            afterObjectCreationHandler
         );
 
         Reflect.defineMetadata('Symbol(ComponentType)', "Controller", extendedConstructor);
+        Reflect.defineMetadata('Symbol(ComponentScope)', ComponentScope.SINGLETON, extendedConstructor);
 
         return extendedConstructor;
-    }
+    };
 }
 
 export interface RouteDecoratorOptions {
@@ -80,16 +91,6 @@ class ControllerUtils {
     static parseOptions(original: ControllerDecoratorOptions) : ControllerDecoratorOptions{
         return original || {
             prefix: "/"
-        }
-    }
-
-    static afterObjectCreationHandler(target, options, newObject) {
-        Reflect.defineMetadata('prefix', options.prefix, target.prototype);
-        let topicFns: Array<(any) => void> = Reflect.getMetadata("topicCallbacks", target.prototype);
-        if (topicFns) {
-            topicFns.forEach((fn) => {
-                fn(newObject)
-            });
         }
     }
 }

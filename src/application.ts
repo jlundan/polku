@@ -69,11 +69,11 @@ export class Application {
             try {
                 switch (Reflect.getMetadata('Symbol(ComponentType)', exports[objectKey])) {
                     case "Controller" : {
-                        scannedExports.push(new ScannedComponentSource(exports[objectKey], ComponentType.CONTROLLER));
+                        scannedExports.push(new ScannedComponentSource(exports[objectKey], ComponentType.CONTROLLER, objectKey));
                         break;
                     }
                     case "Service" : {
-                        scannedExports.push(new ScannedComponentSource(exports[objectKey], ComponentType.SERVICE));
+                        scannedExports.push(new ScannedComponentSource(exports[objectKey], ComponentType.SERVICE, objectKey));
                         break;
                     }
                     default: break
@@ -89,7 +89,7 @@ export class Application {
 }
 
 class ScannedComponentSource {
-    constructor(private _componentSource: any, private _componentType: ComponentType) {
+    constructor(private _componentSource: any, private _componentType: ComponentType, private _exportName: string) {
     }
 
     get componentSource() {
@@ -98,6 +98,10 @@ class ScannedComponentSource {
 
     get componentType() {
         return this._componentType;
+    }
+
+    get exportName() {
+        return this._exportName;
     }
 }
 
@@ -132,12 +136,19 @@ class ApplicationHelpers {
 
 class ApplicationContextHelpers {
     static registerComponents (scannedComponents, applicationContext) {
+        let controllers = [];
         for(let scannedComponent of scannedComponents) {
             applicationContext.registerComponent(
                 scannedComponent.componentSource,
-                Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource),
+                Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource) || scannedComponent.exportName,
                 Reflect.getMetadata('Symbol(ComponentScope)', scannedComponent.componentSource),
                 scannedComponent.componentType);
+
+            if(scannedComponent.componentType === ComponentType.CONTROLLER) {
+                controllers.push(Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource) || scannedComponent.exportName);
+            }
         }
+
+        applicationContext.getComponents(controllers);
     }
 }

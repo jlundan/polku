@@ -16,7 +16,7 @@ export class ApplicationContext {
         }
         return this._instance;
     }
-    private _components: Map<string, any>;
+    private _components: Map<string, ComponentWrapper>;
 
     constructor() {
         this._components = new Map<string, any>();
@@ -39,23 +39,13 @@ export class ApplicationContext {
     }
 
     registerComponent(source: any, name: string, scope: ComponentScope, type: ComponentType) {
-        switch (type) {
-            case ComponentType.SERVICE: {
-                this._components.set(name, new ComponentWrapper(source, scope));
-                break;
-            }
-            case ComponentType.CONTROLLER: {
-                new source();
-                break;
-            }
-            default: break;
-        }
+        this._components.set(name, new ComponentWrapper(source, scope, type));
     }
 }
 
 class ComponentWrapper {
     private _instance: any;
-    constructor(private _source: any, private _scope: ComponentScope) {
+    constructor(private _source: any, private _scope: ComponentScope, private _type: ComponentType) {
         this._instance = null;
     }
 
@@ -68,5 +58,9 @@ class ComponentWrapper {
             this._instance = new this._source();
         }
         return this._instance;
+    }
+
+    get type() {
+        return this._type;
     }
 }
