@@ -4,9 +4,9 @@ export interface RouteContext {
 
 export interface Request {
     body: any;
-    params: [string, string][];
-    query: [string, string][];
-    headers: [string, string][];
+    params: any;
+    query: any;
+    headers: any;
     path: string;
 }
 

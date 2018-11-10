@@ -27,23 +27,23 @@ export class ExpressRouter implements RouterImplementation{
             let ctx: RouteContext = {
                 request: {
                     body: request.body,
-                    headers: [],
-                    params: [],
-                    query: [],
+                    headers: {},
+                    params: {},
+                    query: {},
                     path: request.path
                 }
             };
 
             for(let header of Object.keys(request.headers)) {
-                ctx.request.headers.push([header, request.headers[header] as string|undefined])
+                ctx.request.headers[header] = request.headers[header];
             }
 
             for(let param of Object.keys(request.params)) {
-                ctx.request.params.push([param, request.params[param] as string|undefined]);
+                ctx.request.params[param] = request.params[param];
             }
 
             for(let queryParam of Object.keys(request.query)) {
-                ctx.request.query.push([queryParam, request.query[queryParam] as string|undefined]);
+                ctx.request.query[queryParam] = request.query[queryParam];
             }
 
             let result = controller[routeHandler](ctx);
