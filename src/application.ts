@@ -46,13 +46,13 @@ export class Application {
             if (fs.statSync(filePath).isDirectory()){
                 components = components.concat(this.scanComponents(filePath));
             } else {
-                components = components.concat(this.getComponentSources(filePath));
+                components = components.concat(this.getExportedComponents(filePath));
             }
         }
         return components;
     }
 
-    private getComponentSources(filePath) {
+    private getExportedComponents(filePath) {
         if(!filePath.endsWith(".js")) {
             return [];
         }
@@ -69,11 +69,11 @@ export class Application {
             try {
                 switch (Reflect.getMetadata('Symbol(ComponentType)', exports[objectKey])) {
                     case "Controller" : {
-                        scannedExports.push(new ScannedComponentSource(exports[objectKey], ComponentType.CONTROLLER, objectKey));
+                        scannedExports.push(new ExportedComponent(exports[objectKey], ComponentType.CONTROLLER, objectKey));
                         break;
                     }
                     case "Service" : {
-                        scannedExports.push(new ScannedComponentSource(exports[objectKey], ComponentType.SERVICE, objectKey));
+                        scannedExports.push(new ExportedComponent(exports[objectKey], ComponentType.SERVICE, objectKey));
                         break;
                     }
                     default: break
@@ -88,7 +88,7 @@ export class Application {
     }
 }
 
-class ScannedComponentSource {
+class ExportedComponent {
     constructor(private _componentSource: any, private _componentType: ComponentType, private _exportName: string) {
     }
 
