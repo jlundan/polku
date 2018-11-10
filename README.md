@@ -1,6 +1,6 @@
 # Introduction
 
-Chori is a library with focus on defining APIs using typescript decorators. 
+Chori is a NodeJS library with focus on defining APIs using typescript decorators. 
 
 ## Installing
 
@@ -36,6 +36,7 @@ export class TestController {
     }
 }
 ```
+Restart your node application and you should see the response at http:[your_host]:3000/hello/cnorris.
 
 ## Injecting services
 Define a service somewhere in your project
@@ -66,7 +67,7 @@ export class TestController {
 
     @Route({ "method": "get", "path": "/hello/:name" })
     private hello (ctx: RouteContext) {
-        return this._testService.sayHello(ctx.request.params['name']);
+        return {message: this._testService.sayHello(ctx.request.params['name'])};
     }
 }
 ```
