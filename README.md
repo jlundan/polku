@@ -5,7 +5,7 @@ Chori is a library with focus on defining APIs using typescript decorators.
 ## Installing
 
 ```
-npm install https://[your username]@github.com/jlundan/chori
+npm install https://github.com/jlundan/chori
 ```
 
 ## Bootstrapping
