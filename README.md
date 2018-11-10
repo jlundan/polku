@@ -55,7 +55,7 @@ export class TestService {
 And inject it to your controller
 ```typescript
 import {Controller, Route, RouteContext, Inject} from "chori";
-import {TestService} from "../test/test-service";
+import {TestService} from "./test-service";
 
 @Controller({
     prefix: "/"
