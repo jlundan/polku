@@ -1,6 +1,6 @@
-# chori
+# Introduction
 
-Blah blah
+Chori is a library with focus on defining APIs using typescript decorators. 
 
 ## Installing
 
