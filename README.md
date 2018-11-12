@@ -5,7 +5,7 @@ Polku originates from Finnish, meaning _path_ or _route_, and is a NodeJS librar
 ## Installing
 
 ```
-npm install https://github.com/jlundan/polku
+npm install polku
 ```
 
 ## Bootstrapping
