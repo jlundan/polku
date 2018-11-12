@@ -1,5 +1,5 @@
 {
-  "name": "chori",
+  "name": "polku",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jlundan/chori.git"
+    "url": "git+https://github.com/jlundan/polku.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jlundan/chori/issues"
+    "url": "https://github.com/jlundan/polku/issues"
   },
-  "homepage": "https://github.com/jlundan/chori#readme",
+  "homepage": "https://github.com/jlundan/polku#readme",
   "types": "./dist/index.d.ts",
   "main": "dist/index.js",
   "module": "dist/index.js",

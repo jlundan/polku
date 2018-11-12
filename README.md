@@ -1,18 +1,18 @@
 # Introduction
-
-Chori is a NodeJS library with focus on defining APIs using typescript decorators. 
+ 
+Polku originates from Finnish, meaning _path_ or _route_, and is a NodeJS library which focuses on defining APIs using typescript decorators.
 
 ## Installing
 
 ```
-npm install https://github.com/jlundan/chori
+npm install https://github.com/jlundan/polku
 ```
 
 ## Bootstrapping
 Create file in the root of your project
 
 ```typescript
-import {Application} from "chori";
+import {Application} from "polku";
 const port = 3000;
 new Application({componentScan: __dirname}).start(port);
 ```
@@ -21,7 +21,7 @@ new Application({componentScan: __dirname}).start(port);
 Place a file somewhere in your project with following contents:
 
 ```typescript
-import {Controller, Route, RouteContext} from "chori";
+import {Controller, Route, RouteContext} from "polku";
 
 @Controller({
     prefix: "/"
@@ -41,7 +41,7 @@ Restart your node application and you should see the response at http:[your_host
 ## Injecting services
 Define a service somewhere in your project
 ```typescript
-import {Service} from "chori";
+import {Service} from "polku";
 
 @Service({
     name: "TestService"
@@ -55,7 +55,7 @@ export class TestService {
 
 And inject it to your controller
 ```typescript
-import {Controller, Route, RouteContext, Inject} from "chori";
+import {Controller, Route, RouteContext, Inject} from "polku";
 import {TestService} from "./test-service";
 
 @Controller({
@@ -75,7 +75,7 @@ export class TestController {
 ## Chaining services
 Services can inject another services. Define another service somewhere in your project
 ```typescript
-import {Service} from "chori";
+import {Service} from "polku";
 
 @Service({
     name: "SubService"
@@ -90,7 +90,7 @@ export class SubService {
 The go and modify the TestService from previous example:
 
 ```typescript
-import {Service, Inject} from "chori";
+import {Service, Inject} from "polku";
 import {SubService} from "./sub-service";
 
 @Service({

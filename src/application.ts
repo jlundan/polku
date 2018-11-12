@@ -7,7 +7,7 @@ import * as http from "http";
 
 import {RouterRegistry} from "./router-registry";
 import {ApplicationContext, ComponentType} from "./application-context";
-import {ExpressRouter} from "./express/chori-express";
+import {ExpressRouter} from "./express/polku-express";
 
 export interface ApplicationOptions {
     componentScan?: string
