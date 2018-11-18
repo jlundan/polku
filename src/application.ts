@@ -32,77 +32,12 @@ export class Application {
         }
 
         ApplicationHelpers.callRouterHook(router, "beforeComponentScan");
-        scannedComponents = this.scanComponents(ApplicationHelpers.resolveScanPath(this._options));
+        this._applicationContext.initializeWithDirectoryScan(ApplicationHelpers.resolveScanPath(this._options));
         ApplicationHelpers.callRouterHook(router, "afterComponentScan");
 
-        ApplicationContextHelpers.registerComponents(scannedComponents, this._applicationContext);
     }
 
-    private scanComponents (dir){
-        let components = [];
-        let files = fs.readdirSync(dir);
-        for (let file of files){
-            let filePath = path.join(dir, file);
-            if (fs.statSync(filePath).isDirectory()){
-                components = components.concat(this.scanComponents(filePath));
-            } else {
-                components = components.concat(this.getExportedComponents(filePath));
-            }
-        }
-        return components;
-    }
 
-    private getExportedComponents(filePath) {
-        if(!filePath.endsWith(".js")) {
-            return [];
-        }
-
-        let exports;
-        try{
-            exports = require(filePath);
-        } catch (e) {
-            return [];
-        }
-
-        let scannedExports = [];
-        Object.keys(exports).forEach( (objectKey: string) => {
-            try {
-                switch (Reflect.getMetadata('Symbol(ComponentType)', exports[objectKey])) {
-                    case "Controller" : {
-                        scannedExports.push(new ExportedComponent(exports[objectKey], ComponentType.CONTROLLER, objectKey));
-                        break;
-                    }
-                    case "Service" : {
-                        scannedExports.push(new ExportedComponent(exports[objectKey], ComponentType.SERVICE, objectKey));
-                        break;
-                    }
-                    default: break
-                }
-
-            }catch (e) {
-                console.log(e);
-            }
-        });
-
-        return scannedExports;
-    }
-}
-
-class ExportedComponent {
-    constructor(private _componentSource: any, private _componentType: ComponentType, private _exportName: string) {
-    }
-
-    get componentSource() {
-        return this._componentSource;
-    }
-
-    get componentType() {
-        return this._componentType;
-    }
-
-    get exportName() {
-        return this._exportName;
-    }
 }
 
 class ApplicationHelpers {
@@ -134,21 +69,4 @@ class ApplicationHelpers {
     }
 }
 
-class ApplicationContextHelpers {
-    static registerComponents (scannedComponents, applicationContext) {
-        let controllers = [];
-        for(let scannedComponent of scannedComponents) {
-            applicationContext.registerComponent(
-                scannedComponent.componentSource,
-                Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource) || scannedComponent.exportName,
-                Reflect.getMetadata('Symbol(ComponentScope)', scannedComponent.componentSource),
-                scannedComponent.componentType);
 
-            if(scannedComponent.componentType === ComponentType.CONTROLLER) {
-                controllers.push(Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource) || scannedComponent.exportName);
-            }
-        }
-
-        applicationContext.getComponents(controllers);
-    }
-}
