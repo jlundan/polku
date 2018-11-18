@@ -16,10 +16,15 @@
   "bugs": {
     "url": "https://github.com/jlundan/polku/issues"
   },
+  "files": [
+    "dist/src/",
+    "package.json",
+    "README.md"
+  ],
   "homepage": "https://github.com/jlundan/polku#readme",
-  "types": "./dist/index.d.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
+  "types": "./dist/src/index.d.ts",
+  "main": "dist/src/index.js",
+  "module": "dist/src/index.js",
   "dependencies": {
     "reflect-metadata": "^0.1.12",
     "express": "^4.16.4",
