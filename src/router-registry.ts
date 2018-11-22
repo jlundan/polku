@@ -10,7 +10,7 @@ export interface Request {
     path: string;
 }
 
-export interface RouterImplementation {
+export interface RouterIntegration {
     registerRoute(url: string, method: string, controller:any, routeHandler: string);
     beforeComponentScan(): void;
     afterComponentScan(): void;
@@ -18,7 +18,7 @@ export interface RouterImplementation {
 
 export class RouterRegistry {
     private static _instance: RouterRegistry;
-    private _defaultRouterImplementation: RouterImplementation;
+    private _defaultRouterImplementation: RouterIntegration;
 
     static getInstance(): RouterRegistry {
         if(!RouterRegistry._instance) {
@@ -35,11 +35,11 @@ export class RouterRegistry {
      *
      * @param routerImplementation The router implementation which will be used by the Route annotations to register routes
      */
-    registerRouter(routerImplementation: RouterImplementation) {
+    registerRouter(routerImplementation: RouterIntegration) {
         this._defaultRouterImplementation = routerImplementation;
     }
 
-    getRouter(): RouterImplementation {
+    getRouter(): RouterIntegration {
         return this._defaultRouterImplementation;
     }
 }

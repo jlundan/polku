@@ -1,7 +1,7 @@
-import {RouterImplementation, RouteContext} from "../../../src/";
+import {RouterIntegration, RouteContext} from "../../../src/";
 
 
-export class DummyRouter implements RouterImplementation{
+export class DummyRouter implements RouterIntegration{
     registerRoute(url: string, method: string, controller: any, routeHandler: any) {
     }
 

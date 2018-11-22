@@ -1,5 +1,5 @@
 import * as express from "express";
-import {RouterImplementation, RouteContext} from "../router-registry";
+import {RouterIntegration, RouteContext} from "../router-registry";
 
 export type BeforeRouterSetup = (application: express.Application) => any;
 export type AfterRouterSetup = (application: express.Application, router: express.Router) => any;
@@ -9,7 +9,7 @@ export interface ExpressRouterOptions {
     afterRouterSetup?: AfterRouterSetup
 }
 
-export class ExpressRouter implements RouterImplementation{
+export class ExpressRouter implements RouterIntegration{
     private readonly _app: express.Application;
     private readonly _router: express.Router;
     private readonly _beforeRouterSetup: BeforeRouterSetup;

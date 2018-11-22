@@ -4,7 +4,7 @@ import * as helmet from "helmet";
 import * as bodyParser from "body-parser";
 import * as http from "http";
 
-import {RouterRegistry} from "./router-registry";
+import {RouterIntegration, RouterRegistry} from "./router-registry";
 import {ApplicationContext} from "./application-context";
 import {ExpressRouter} from "./express/polku-express";
 
@@ -15,17 +15,29 @@ export interface ApplicationOptions {
 export class Application {
     private _routerRegistry;
     private readonly _applicationContext: ApplicationContext;
+    private _defaultIntegrationPort;
 
     constructor(private _options?: ApplicationOptions){
         this._routerRegistry = RouterRegistry.getInstance();
         this._applicationContext = ApplicationContext.getInstance();
+        this._defaultIntegrationPort = null;
     }
 
-    public start(port?: number){
+    public withRouterIntegration(integration: RouterIntegration) {
+        this._routerRegistry.registerRouter(integration);
+        return this;
+    }
+
+    public withDefaultRouting(port: number) {
+        this._defaultIntegrationPort = port;
+        return this;
+    }
+
+    public start(){
         let router = this._routerRegistry.getRouter();
 
         if(!router) {
-            router = ApplicationHelpers.createDefaultRouter(port);
+            router = ApplicationHelpers.createDefaultRouter(this._defaultIntegrationPort || 3000);
             this._routerRegistry.registerRouter(router);
         }
 
