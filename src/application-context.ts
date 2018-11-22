@@ -19,7 +19,7 @@ export class ApplicationContext {
         }
         return this._instance;
     }
-    private _components: Map<string, ComponentWrapper>;
+    private _components: Map<string, ComponentDefinition>;
 
     constructor() {
         this._components = new Map<string, any>();
@@ -41,22 +41,29 @@ export class ApplicationContext {
         return cmps;
     }
 
-    registerComponent(source: any, name: string, scope: ComponentScope, type: ComponentType) {
-        this._components.set(name, new ComponentWrapper(source, scope, type));
+    getComponentDefinitions(names: string[]) {
+        if(!names){
+            return [];
+        }
+
+        let cmps = [];
+        for(let name of names) {
+            cmps.push(this._components.get(name) ? this._components.get(name) : null);
+        }
+        return cmps;
     }
 
     public initializeWithDirectoryScan (dir) {
         let scannedComponents = this.scanDirectory(dir);
         let controllers = [];
+
         for(let scannedComponent of scannedComponents) {
-            this.registerComponent(
-                scannedComponent.componentSource,
-                Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource) || scannedComponent.exportName,
-                Reflect.getMetadata('Symbol(ComponentScope)', scannedComponent.componentSource),
-                scannedComponent.componentType);
+            const componentName = Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource) || scannedComponent.exportName;
+
+            this._components.set(componentName, scannedComponent);
 
             if(scannedComponent.componentType === ComponentType.CONTROLLER) {
-                controllers.push(Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource) || scannedComponent.exportName);
+                controllers.push(componentName);
             }
         }
 
@@ -94,11 +101,11 @@ export class ApplicationContext {
             try {
                 switch (Reflect.getMetadata('Symbol(ComponentType)', exports[objectKey])) {
                     case "Controller" : {
-                        scannedExports.push(new ExportedComponent(exports[objectKey], ComponentType.CONTROLLER, objectKey));
+                        scannedExports.push(new ComponentDefinition(exports[objectKey], ComponentType.CONTROLLER, objectKey));
                         break;
                     }
                     case "Service" : {
-                        scannedExports.push(new ExportedComponent(exports[objectKey], ComponentType.SERVICE, objectKey));
+                        scannedExports.push(new ComponentDefinition(exports[objectKey], ComponentType.SERVICE, objectKey));
                         break;
                     }
                     default: break
@@ -113,8 +120,11 @@ export class ApplicationContext {
     }
 }
 
-class ExportedComponent {
+class ComponentDefinition {
+    private _instance: any;
+
     constructor(private _componentSource: any, private _componentType: ComponentType, private _exportName: string) {
+        this._instance = null;
     }
 
     get componentSource() {
@@ -125,29 +135,22 @@ class ExportedComponent {
         return this._componentType;
     }
 
+    get componentScope() {
+        return Reflect.getMetadata('Symbol(ComponentScope)', this.componentSource)
+    }
+
     get exportName() {
         return this._exportName;
     }
-}
-
-class ComponentWrapper {
-    private _instance: any;
-    constructor(private _source: any, private _scope: ComponentScope, private _type: ComponentType) {
-        this._instance = null;
-    }
 
     get instance() {
-        if(this._scope === ComponentScope.PROTOTYPE){
-            return new this._source();
+        if(this.componentScope === ComponentScope.PROTOTYPE){
+            return new this.componentSource();
         }
 
         if(!this._instance) {
-            this._instance = new this._source();
+            this._instance = new this.componentSource();
         }
         return this._instance;
-    }
-
-    get type() {
-        return this._type;
     }
 }
