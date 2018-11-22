@@ -1,12 +1,11 @@
 import * as path from "path";
-import * as fs from "fs";
 import * as express from "express";
 import * as helmet from "helmet";
 import * as bodyParser from "body-parser";
 import * as http from "http";
 
 import {RouterRegistry} from "./router-registry";
-import {ApplicationContext, ComponentType} from "./application-context";
+import {ApplicationContext} from "./application-context";
 import {ExpressRouter} from "./express/polku-express";
 
 export interface ApplicationOptions {
@@ -23,7 +22,6 @@ export class Application {
     }
 
     public start(port?: number){
-        let scannedComponents;
         let router = this._routerRegistry.getRouter();
 
         if(!router) {
@@ -34,7 +32,6 @@ export class Application {
         ApplicationHelpers.callRouterHook(router, "beforeComponentScan");
         this._applicationContext.initializeWithDirectoryScan(ApplicationHelpers.resolveScanPaths(this._options));
         ApplicationHelpers.callRouterHook(router, "afterComponentScan");
-
     }
 }
 
