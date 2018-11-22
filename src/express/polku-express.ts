@@ -23,7 +23,7 @@ export class ExpressRouter implements RouterImplementation{
     }
 
     registerRoute(url: string, method: string, controller: any, routeHandler: any) {
-        this._router.get(url, (request: express.Request, response: express.Response) => {
+        this._router[method](url, (request: express.Request, response: express.Response) => {
             let ctx: RouteContext = {
                 request: {
                     body: request.body,
