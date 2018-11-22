@@ -4,7 +4,7 @@ import {Service} from "../../../src/";
     name: "SubService"
 })
 export class SubService {
-    test(): string {
+    foo(): string {
         return "foo";
     }
 }

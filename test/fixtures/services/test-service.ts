@@ -9,6 +9,6 @@ export class TestService {
     }
 
     sayHello(name): string {
-        return `Hello, ${name}! And the sub-service says: ${this._subService.test()}`;
+        return `Hello, ${name}! And the sub-service says: ${this._subService.foo()}`;
     }
 }
