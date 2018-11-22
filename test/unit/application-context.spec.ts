@@ -11,7 +11,10 @@ describe('application-context', () => {
     before(() => {
         RouterRegistry.getInstance().registerRouter(new DummyRouter());
         applicationContext = ApplicationContext.getInstance();
-        applicationContext.initializeWithDirectoryScan(path.join(__dirname, "..", "fixtures"));
+        applicationContext.initializeWithDirectoryScan([
+            path.join(__dirname, "..", "fixtures", "services"),
+            path.join(__dirname, "..", "fixtures", "controllers")
+        ]);
     });
 
     it('should return one controller- and two service component definitions', () => {
