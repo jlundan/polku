@@ -53,17 +53,20 @@ export class ApplicationContext {
         return cmps;
     }
 
-    public initializeWithDirectoryScan (dir) {
-        let scannedComponents = this.scanDirectory(dir);
+    public initializeWithDirectoryScan (directories) {
         let controllers = [];
 
-        for(let scannedComponent of scannedComponents) {
-            const componentName = Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource) || scannedComponent.exportName;
+        for(const directory of directories) {
+            let scannedComponents = this.scanDirectory(directory);
 
-            this._components.set(componentName, scannedComponent);
+            for(let scannedComponent of scannedComponents) {
+                const componentName = Reflect.getMetadata('Symbol(ComponentName)', scannedComponent.componentSource) || scannedComponent.exportName;
 
-            if(scannedComponent.componentType === ComponentType.CONTROLLER) {
-                controllers.push(componentName);
+                this._components.set(componentName, scannedComponent);
+
+                if(scannedComponent.componentType === ComponentType.CONTROLLER) {
+                    controllers.push(componentName);
+                }
             }
         }
 

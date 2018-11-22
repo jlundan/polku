@@ -10,7 +10,7 @@ import {ApplicationContext, ComponentType} from "./application-context";
 import {ExpressRouter} from "./express/polku-express";
 
 export interface ApplicationOptions {
-    componentScan?: string
+    componentScan?: string | Array<string>;
 }
 
 export class Application {
@@ -32,21 +32,19 @@ export class Application {
         }
 
         ApplicationHelpers.callRouterHook(router, "beforeComponentScan");
-        this._applicationContext.initializeWithDirectoryScan(ApplicationHelpers.resolveScanPath(this._options));
+        this._applicationContext.initializeWithDirectoryScan(ApplicationHelpers.resolveScanPaths(this._options));
         ApplicationHelpers.callRouterHook(router, "afterComponentScan");
 
     }
-
-
 }
 
 class ApplicationHelpers {
-    static resolveScanPath (options?: ApplicationOptions){
+    static resolveScanPaths (options?: ApplicationOptions){
         if(!options || !options.componentScan) {
             return path.join(__dirname, "..", "..", "src");
         }
 
-        return options.componentScan;
+        return Array.isArray(options.componentScan) ? options.componentScan : [options.componentScan];
     }
 
     static createDefaultRouter(port: number){
