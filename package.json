@@ -6,7 +6,9 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "dev:clean": "rimraf ./dist",
-    "test:unit": "mocha 'dist/test/**/*.spec.js'"
+    "test:unit": "mocha 'dist/test/unit/**/*.spec.js'",
+    "test:api": "mocha 'dist/test/api/**/*.spec.js'",
+    "test:all": "mocha 'dist/test/**/*.spec.js'"
   },
   "repository": {
     "type": "git",
