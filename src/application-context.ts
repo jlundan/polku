@@ -1,6 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 
+const ts = require("typescript");
+
 export enum ComponentType {
     CONTROLLER,
     SERVICE
@@ -88,7 +90,7 @@ export class ApplicationContext {
     }
 
     private getExportedComponents(filePath) {
-        if(!filePath.endsWith(".js")) {
+        if(!filePath.endsWith(".js") || !TypeScriptUtils.fileHasDecorateFunction(filePath)) {
             return [];
         }
 
@@ -155,5 +157,32 @@ class ComponentDefinition {
             this._instance = new this.componentSource();
         }
         return this._instance;
+    }
+}
+
+class TypeScriptUtils {
+    static fileHasDecorateFunction(filePath): boolean {
+        const contents = fs.readFileSync(filePath, 'utf8');
+        let tsSourceFile = ts.createSourceFile(
+            __filename,
+            contents,
+            ts.ScriptTarget.Latest
+        );
+
+        let hasDecorate = false;
+        for(let statement of tsSourceFile.statements) {
+            if(statement.declarationList &&
+                statement.declarationList.declarations &&
+                statement.declarationList.declarations[0] &&
+                statement.declarationList.declarations[0].name &&
+                statement.declarationList.declarations[0].name.escapedText &&
+                statement.declarationList.declarations[0].name.escapedText === '___decorate') {
+
+                hasDecorate = true;
+                break;
+            }
+        }
+
+        return hasDecorate;
     }
 }
