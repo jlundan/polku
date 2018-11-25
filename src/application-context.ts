@@ -3,6 +3,8 @@ import * as path from "path";
 
 const ts = require("typescript");
 
+const excludedFolders = ["node_modules", ".git"];
+
 export enum ComponentType {
     CONTROLLER,
     SERVICE
@@ -55,6 +57,10 @@ export class ApplicationContext {
         return cmps;
     }
 
+    clear(){
+        this._components.clear();
+    }
+
     public initializeWithDirectoryScan (directories) {
         let controllers = [];
 
@@ -79,7 +85,11 @@ export class ApplicationContext {
         let components = [];
         let files = fs.readdirSync(dir);
         for (let file of files){
+            if(excludedFolders.indexOf(file) !== -1) {
+                continue;
+            }
             let filePath = path.join(dir, file);
+
             if (fs.statSync(filePath).isDirectory()){
                 components = components.concat(this.scanDirectory(filePath));
             } else {
