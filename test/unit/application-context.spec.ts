@@ -68,4 +68,36 @@ describe('application-context', () => {
         expect(components[0]).have.property("_testService");
         expect(components[0]._testService).not.to.be.null;
     });
+
+    it('clears components', () => {
+        applicationContext.clear();
+        const componentNames = ["TestController", "TestService", "SubService"];
+        const components = applicationContext.getComponents(componentNames);
+
+        expect(components.length).to.eq(3);
+
+        expect(components[0]).to.be.null;
+        expect(components[1]).to.be.null;
+        expect(components[2]).to.be.null;
+    });
+
+    it('loads properly with wide component scan', () => {
+        applicationContext.initializeWithDirectoryScan([
+            path.join(__dirname, "..", "fixtures")
+        ]);
+
+        const componentNames = ["TestController", "TestService", "SubService"];
+        const components = applicationContext.getComponents(componentNames);
+
+        expect(components.length).to.eq(3);
+
+        expect(components[0]).not.to.be.null;
+        expect(components[1]).not.to.be.null;
+        expect(components[2]).not.to.be.null;
+    });
+
+    after(() => {
+        applicationContext.clear();
+        RouterRegistry.getInstance().clear();
+    })
 });
