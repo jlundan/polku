@@ -3,13 +3,11 @@ import "reflect-metadata";
 import * as path from "path";
 import { expect } from 'chai';
 import {ApplicationContext, RouterRegistry} from "../../src";
-import {DummyRouter} from "../fixtures/router-integrations/dummy-router";
 
 describe('application-context', () => {
     let applicationContext;
 
     before(() => {
-        RouterRegistry.getInstance().registerRouter(new DummyRouter());
         applicationContext = ApplicationContext.getInstance();
         applicationContext.initializeWithDirectoryScan([
             path.join(__dirname, "..", "fixtures", "services"),

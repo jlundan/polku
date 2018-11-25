@@ -46,8 +46,13 @@ export function Route(options: RouteDecoratorOptions) {
         topicFns.push((obj:any) => {
             let controllerPrefix = Reflect.getMetadata('prefix', target);
             let routePath = options.path;
-            RouterRegistry.getInstance().getRouter()
-                .registerRoute(path.join(controllerPrefix, routePath), options.method, obj, propertyKey);
+
+            let router = RouterRegistry.getInstance().getRouter();
+            if(router) {
+                router.registerRoute(path.join(controllerPrefix, routePath), options.method, obj, propertyKey);
+            } else {
+                console.log(`WARNING: no router integration configured, cannot register route: ${path.join(controllerPrefix, routePath)}\n`);
+            }
         });
     }
 }
