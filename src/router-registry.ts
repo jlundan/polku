@@ -10,10 +10,16 @@ export interface Request {
     path: string;
 }
 
+export interface ResponseSerializer {
+    serializeResponse(response: any): string;
+    serializeError(error: any): string;
+}
+
 export interface RouterIntegration {
     registerRoute(url: string, method: string, controller:any, routeHandler: string);
     beforeComponentScan(): void;
     afterComponentScan(): void;
+    setResponseSerializer(serializer: ResponseSerializer): void;
 }
 
 export class RouterRegistry {

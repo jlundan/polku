@@ -4,9 +4,10 @@ import * as helmet from "helmet";
 import * as bodyParser from "body-parser";
 import * as http from "http";
 
-import {RouterIntegration, RouterRegistry} from "./router-registry";
+import {ResponseSerializer, RouterIntegration, RouterRegistry} from "./router-registry";
 import {ApplicationContext} from "./application-context";
 import {ExpressRouter} from "./express/polku-express";
+import {JsonSerializer} from "./response-serializers/json-serializer";
 
 const DEFAULT_PORT = 3000;
 
@@ -22,6 +23,7 @@ export class Application {
     private _routerRegistry;
     private readonly _applicationContext: ApplicationContext;
     private _defaultIntegrationPort;
+    private _responseSerializer: ResponseSerializer;
 
     constructor(private _options?: ApplicationOptions){
         this._routerRegistry = RouterRegistry.getInstance();
@@ -46,6 +48,8 @@ export class Application {
             router = ApplicationHelpers.createDefaultRouter(this._defaultIntegrationPort || DEFAULT_PORT);
             this._routerRegistry.registerRouter(router);
         }
+
+        router.setResponseSerializer(this._responseSerializer || new JsonSerializer());
 
         ApplicationHelpers.callRouterHook(router, "beforeComponentScan");
         this._applicationContext.initializeWithDirectoryScan(ApplicationHelpers.resolveScanPaths(this._options));
