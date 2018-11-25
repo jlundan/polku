@@ -8,8 +8,14 @@ import {RouterIntegration, RouterRegistry} from "./router-registry";
 import {ApplicationContext} from "./application-context";
 import {ExpressRouter} from "./express/polku-express";
 
+const DEFAULT_PORT = 3000;
+
 export interface ApplicationOptions {
     componentScan?: string | Array<string>;
+}
+
+export interface DefaultRoutingOptions {
+    port: number;
 }
 
 export class Application {
@@ -23,13 +29,13 @@ export class Application {
         this._defaultIntegrationPort = null;
     }
 
-    public withRouterIntegration(integration: RouterIntegration) {
+    public withRouting(integration: RouterIntegration) {
         this._routerRegistry.registerRouter(integration);
         return this;
     }
 
-    public withDefaultRouting(port: number) {
-        this._defaultIntegrationPort = port;
+    public withDefaultRouting(options: DefaultRoutingOptions) {
+        this._defaultIntegrationPort = options.port;
         return this;
     }
 
@@ -37,7 +43,7 @@ export class Application {
         let router = this._routerRegistry.getRouter();
 
         if(!router) {
-            router = ApplicationHelpers.createDefaultRouter(this._defaultIntegrationPort || 3000);
+            router = ApplicationHelpers.createDefaultRouter(this._defaultIntegrationPort || DEFAULT_PORT);
             this._routerRegistry.registerRouter(router);
         }
 
