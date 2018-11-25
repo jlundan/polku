@@ -7,7 +7,7 @@ import * as http from "http";
 import { expect } from 'chai';
 import * as path from "path";
 
-import {Application} from "../../src";
+import {Application, RouterRegistry} from "../../src";
 import {ExpressRouter} from "../../src/express/polku-express";
 
 const TEST_PORT = 4444;
@@ -23,7 +23,7 @@ describe('test-controller', () => {
             ];
 
             new Application({componentScan: componentScanPaths})
-                .withRouterIntegration(new ExpressRouter({
+                .withRouting(new ExpressRouter({
                     beforeRouterSetup: (app: express.Application)=>{
                     },
                     afterRouterSetup: (app: express.Application) => {
@@ -44,6 +44,7 @@ describe('test-controller', () => {
     });
 
     after(() => {
+        RouterRegistry.getInstance().clear();
         server.close();
     })
 });
