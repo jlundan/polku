@@ -12,4 +12,12 @@ export class TestController {
     private hello (ctx: RouteContext) {
         return {message: this._testService.sayHello(ctx.request.params['name'])};
     }
+
+    @Route({ "method": "get", "path": "/fail/with/:status" })
+    private failWithStatusCode (ctx: RouteContext) {
+        throw {
+            message: "Request failed",
+            statusCode: ctx.request.params['status']
+        };
+    }
 }

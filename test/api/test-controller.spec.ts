@@ -43,6 +43,12 @@ describe('test-controller', () => {
         expect(result.text).to.eq('{"message":"Hello, cnorris! And the sub-service says: foo"}');
     });
 
+    it('fails with status code', async () => {
+        const result = await request('http://localhost:4444').get('/fail/with/400');
+        expect(result.statusCode).to.eq(400);
+        expect(JSON.parse(result.text)).to.eq('Request failed');
+    });
+
     after(() => {
         RouterRegistry.getInstance().clear();
         server.close();
