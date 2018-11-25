@@ -8,7 +8,10 @@ export class TestService {
     constructor(@Inject("SubService") private _subService: SubService) {
     }
 
-    sayHello(name): string {
-        return `Hello, ${name}! And the sub-service says: ${this._subService.foo()}`;
+    echoMessage(message) {
+        return {
+            heading: "test",
+            message: this._subService.injectToLiteral(message)
+        };
     }
 }

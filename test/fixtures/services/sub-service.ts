@@ -4,7 +4,9 @@ import {Service} from "../../../src/";
     name: "SubService"
 })
 export class SubService {
-    foo(): string {
-        return "foo";
+    injectToLiteral(text: string): any {
+        return {
+            text: text
+        };
     }
 }

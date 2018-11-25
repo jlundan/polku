@@ -8,9 +8,9 @@ export class TestController {
     constructor(@Inject("TestService") private _testService: TestService) {
     }
 
-    @Route({ "method": "get", "path": "/hello/:name" })
-    private hello (ctx: RouteContext) {
-        return {message: this._testService.sayHello(ctx.request.params['name'])};
+    @Route({ "method": "get", "path": "/echo/:message" })
+    private echo (ctx: RouteContext) {
+        return {response: this._testService.echoMessage(ctx.request.params['message'])};
     }
 
     @Route({ "method": "get", "path": "/fail/with/:status" })

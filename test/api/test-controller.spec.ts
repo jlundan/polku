@@ -38,9 +38,9 @@ describe('test-controller', () => {
     });
 
     it('should say hello', async () => {
-        const result = await request('http://localhost:4444').get('/hello/cnorris');
+        const result = await request('http://localhost:4444').get('/echo/cnorris');
         expect(result.statusCode).to.eq(200);
-        expect(result.text).to.eq('{"message":"Hello, cnorris! And the sub-service says: foo"}');
+        expect(result.text).to.eq('{"response":{"heading":"test","message":{"text":"cnorris"}}}');
     });
 
     it('fails with status code', async () => {

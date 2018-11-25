@@ -44,27 +44,32 @@ describe('application-context', () => {
     it('should return SubService', () => {
         const componentNames = ["SubService"];
         const components = applicationContext.getComponents(componentNames);
-        expect(components[0]).have.property("foo");
-        expect((typeof components[0].foo)).to.eq("function");
-        expect(components[0].foo()).eq("foo");
+        expect(components[0]).have.property("injectToLiteral");
+        expect((typeof components[0].injectToLiteral)).to.eq("function");
+        let obj = components[0].injectToLiteral("test");
+        expect(obj.text).eq("test");
     });
 
 
     it('should return TestService', () => {
         const componentNames = ["TestService"];
         const components = applicationContext.getComponents(componentNames);
-        expect(components[0]).have.property("sayHello");
-        expect((typeof components[0].sayHello)).to.eq("function");
+        expect(components[0]).have.property("echoMessage");
+        expect((typeof components[0].echoMessage)).to.eq("function");
         expect(components[0]).have.property("_subService");
         expect(components[0]._subService).not.to.be.null;
-        expect(components[0].sayHello("cnorris")).eq(`Hello, cnorris! And the sub-service says: foo`);
+        let obj = components[0].echoMessage("test");
+        expect(obj).have.property("heading");
+        expect(obj).have.property("message");
+        expect(obj.message).have.property("text");
+        expect(obj.message.text).eq('test');
     });
 
     it('should return TestController', () => {
         const componentNames = ["TestController"];
         const components = applicationContext.getComponents(componentNames);
-        expect(components[0]).have.property("hello");
-        expect((typeof components[0].hello)).to.eq("function");
+        expect(components[0]).have.property("echo");
+        expect((typeof components[0]['echo'])).to.eq("function");
         expect(components[0]).have.property("_testService");
         expect(components[0]._testService).not.to.be.null;
     });
