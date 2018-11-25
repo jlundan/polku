@@ -1,5 +1,5 @@
 import * as express from "express";
-import {RouterIntegration, RouteContext} from "../router-registry";
+import {RouterIntegration, RouteContext, ResponseSerializer} from "../router-registry";
 
 export type BeforeRouterSetup = (application: express.Application) => any;
 export type AfterRouterSetup = (application: express.Application, router: express.Router) => any;
@@ -14,6 +14,7 @@ export class ExpressRouter implements RouterIntegration{
     private readonly _router: express.Router;
     private readonly _beforeRouterSetup: BeforeRouterSetup;
     private readonly _afterRouterSetup: AfterRouterSetup;
+    private _responseSerializer: ResponseSerializer;
 
     public constructor(options?: ExpressRouterOptions) {
         this._app = express();
@@ -46,14 +47,26 @@ export class ExpressRouter implements RouterIntegration{
                 ctx.request.query[queryParam] = request.query[queryParam];
             }
 
-            let result = controller[routeHandler](ctx);
+            try{
+                let result = controller[routeHandler](ctx);
 
-            if(result instanceof Promise) {
-                result.then((result: any) => {
-                    response.status(200).send(result);
-                });
-            } else {
-                response.status(200).send(result);
+                if(result instanceof Promise) {
+                    result.then((promiseResult: any) => {
+                        if(!promiseResult) {
+                            response.status(200).send(this._responseSerializer.serializeResponse(""));
+                        } else {
+                            response.status(promiseResult.statusCode || 200).send(this._responseSerializer.serializeResponse(promiseResult.body || promiseResult));
+                        }
+                    });
+                } else {
+                    if(!result) {
+                        response.status(200).send(this._responseSerializer.serializeResponse(""));
+                    } else {
+                        response.status(result.statusCode || 200).send(this._responseSerializer.serializeResponse(result.body || result));
+                    }
+                }
+            } catch (e) {
+                response.status(e.statusCode || 500).send(this._responseSerializer.serializeError(e.message || e));
             }
         });
     }
@@ -70,5 +83,9 @@ export class ExpressRouter implements RouterIntegration{
         if(this._beforeRouterSetup){
             this._beforeRouterSetup(this._app);
         }
+    }
+
+    setResponseSerializer(serializer: ResponseSerializer): void {
+        this._responseSerializer = serializer;
     }
 }
