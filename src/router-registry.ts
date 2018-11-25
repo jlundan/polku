@@ -42,4 +42,8 @@ export class RouterRegistry {
     getRouter(): RouterIntegration {
         return this._defaultRouterImplementation;
     }
+
+    clear() {
+        this._defaultRouterImplementation = null;
+    }
 }
