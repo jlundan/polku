@@ -50,7 +50,7 @@ export class Application {
 class ApplicationHelpers {
     static resolveScanPaths (options?: ApplicationOptions){
         if(!options || !options.componentScan) {
-            return path.join(__dirname, "..", "..", "src");
+            return path.join(__dirname, "..", "..", "..");
         }
 
         return Array.isArray(options.componentScan) ? options.componentScan : [options.componentScan];
