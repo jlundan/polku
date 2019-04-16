@@ -64,24 +64,16 @@ describe('test-controller with custom config', () => {
         });
     });
 
-    it('should respond with test message', async () => {
+    it('should respond with test message on first controller', async () => {
+        const result = await request(`http://localhost:${TEST_PORT_1}`).get('/test');
+        expect(result.statusCode).to.eq(200);
+        expect(result.text).to.eq('{"message":"test-controller-1"}');
+    });
+
+    it('should respond with test message on second controller', async () => {
         const result = await request(`http://localhost:${TEST_PORT_2}`).get('/test');
         expect(result.statusCode).to.eq(200);
-        expect(result.text).to.eq('{"message":"test"}');
-    });
-
-    it('fails with status code', async () => {
-        const result = await request(`http://localhost:${TEST_PORT_1}`).get('/fail/with/400');
-        expect(result.statusCode).to.eq(400);
-        expect(JSON.parse(result.text)).to.eq('Request failed');
-    });
-
-    it('handles post correctly', async () => {
-        const result = await request(`http://localhost:${TEST_PORT_1}`).post('/api/messages').send({message: 'test message'});
-        expect(result.statusCode).to.eq(200);
-        const res = JSON.parse(result.text);
-        expect(res.id).not.to.be.empty;
-        expect(res.message).not.to.be.empty;
+        expect(result.text).to.eq('{"message":"test-controller-2"}');
     });
 
     after(() => {

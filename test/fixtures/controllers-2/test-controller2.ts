@@ -10,7 +10,7 @@ export class TestController2 {
     @Route({ "method": "get", "path": "/test" })
     private test () {
         return {
-            message: "test"
+            message: "test-controller-2"
         };
     }
 }

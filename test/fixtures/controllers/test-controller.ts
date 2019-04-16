@@ -8,6 +8,13 @@ export class TestController {
     constructor(@Inject("TestService") private _testService: TestService) {
     }
 
+    @Route({ "method": "get", "path": "/test" })
+    private test () {
+        return {
+            message: "test-controller-1"
+        };
+    }
+
     @Route({ "method": "get", "path": "/echo/:message" })
     private echo (ctx: RouteContext) {
         return {response: this._testService.echoMessage(ctx.request.params['message'])};
