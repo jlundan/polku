@@ -49,9 +49,9 @@ describe('test-controller with custom config', () => {
             routerRegistry.registerRouter("router-1", new ExpressRouter(router1), true);
             routerRegistry.registerRouter("router-2", new ExpressRouter(router2));
 
-            applicationContext.initializeWithDirectoryScan(componentScanPaths1);
+            applicationContext.scan(componentScanPaths1);
             routerRegistry.activateRouter("router-2");
-            applicationContext.initializeWithDirectoryScan(componentScanPaths2);
+            applicationContext.scan(componentScanPaths2);
 
             server1 = http.createServer(app1);
             server2 = http.createServer(app2);

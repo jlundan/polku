@@ -61,7 +61,7 @@ export class ApplicationContext {
         this._components.clear();
     }
 
-    public initializeWithDirectoryScan (directories) {
+    public scan (directories) {
         let controllers = [];
 
         for(const directory of directories) {

@@ -9,7 +9,7 @@ describe('application-context', () => {
 
     before(() => {
         applicationContext = ApplicationContext.getInstance();
-        applicationContext.initializeWithDirectoryScan([
+        applicationContext.scan([
             path.join(__dirname, "..", "fixtures", "services"),
             path.join(__dirname, "..", "fixtures", "controllers")
         ]);
@@ -87,7 +87,7 @@ describe('application-context', () => {
     });
 
     it('loads properly with wide component scan', () => {
-        applicationContext.initializeWithDirectoryScan([
+        applicationContext.scan([
             path.join(__dirname, "..", "fixtures")
         ]);
 
