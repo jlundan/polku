@@ -1,6 +1,12 @@
-import * as express from "express";
-import {RouterIntegration, RouteContext, ResponseSerializer} from "../router-registry";
+import {RouterIntegration, RouteContext, ResponseSerializer, RouterRegistry} from "../router-registry";
 import {JsonSerializer} from "../response-serializers/json-serializer";
+
+import * as express from "express";
+import * as path from "path";
+import * as http from "http";
+import * as bodyParser from "body-parser";
+import {ApplicationContext} from "../application-context";
+import {Server} from "http";
 
 export class ExpressRouter implements RouterIntegration{
     private readonly _router: express.Router;
@@ -55,6 +61,41 @@ export class ExpressRouter implements RouterIntegration{
                 }
             } catch (e) {
                 response.status(e.statusCode || 500).send(this._responseSerializer.serializeError(e.message || e));
+            }
+        });
+    }
+}
+
+export class DefaultExpressApplication {
+    private readonly _componentPaths: string [];
+    private readonly _app: express.Application;
+    private readonly _router: express.Router;
+
+    constructor(componentPaths: string[]) {
+        this._componentPaths = componentPaths;
+        this._app = express();
+        this._router = express.Router();
+        this._app.use(bodyParser.json());
+        this._app.use(this._router);
+    }
+
+    public start(port?: number): Promise<Server> {
+        return new Promise<Server>((resolve, reject) => {
+            try {
+                RouterRegistry.getInstance().registerRouter("router-1", new ExpressRouter(this._router), true);
+                ApplicationContext.getInstance().scan(this._componentPaths);
+
+                const server = http.createServer(this._app);
+
+                server.on('error', (e) => {
+                    reject(e);
+                });
+
+                server.listen(port || 3000, () => {
+                    resolve(server);
+                });
+            } catch (e) {
+                reject(e);
             }
         });
     }
