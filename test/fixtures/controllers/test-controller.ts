@@ -20,4 +20,9 @@ export class TestController {
             statusCode: ctx.request.params['status']
         };
     }
+
+    @Route({ "method": "post", "path": "/api/messages" })
+    private createNewMessage (ctx: RouteContext) {
+        return this._testService.addMessage(ctx.request.body.message);
+    }
 }
