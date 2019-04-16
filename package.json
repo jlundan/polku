@@ -38,10 +38,12 @@
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.2",
+    "@types/uuid": "^3.4.4",
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
+    "rimraf": "^2.6.2",
     "supertest": "^3.3.0",
     "typescript": "^3.1.6",
-    "rimraf": "^2.6.2"
+    "uuid": "^3.3.2"
   }
 }
