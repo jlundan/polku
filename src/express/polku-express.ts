@@ -1,26 +1,14 @@
 import * as express from "express";
 import {RouterIntegration, RouteContext, ResponseSerializer} from "../router-registry";
-
-export type BeforeRouterSetup = (application: express.Application) => any;
-export type AfterRouterSetup = (application: express.Application, router: express.Router) => any;
-
-export interface ExpressRouterOptions {
-    beforeRouterSetup?: BeforeRouterSetup
-    afterRouterSetup?: AfterRouterSetup
-}
+import {JsonSerializer} from "../response-serializers/json-serializer";
 
 export class ExpressRouter implements RouterIntegration{
-    private readonly _app: express.Application;
     private readonly _router: express.Router;
-    private readonly _beforeRouterSetup: BeforeRouterSetup;
-    private readonly _afterRouterSetup: AfterRouterSetup;
     private _responseSerializer: ResponseSerializer;
 
-    public constructor(options?: ExpressRouterOptions) {
-        this._app = express();
-        this._router = express.Router();
-        this._beforeRouterSetup = options && options.beforeRouterSetup ? options.beforeRouterSetup : null;
-        this._afterRouterSetup = options && options.afterRouterSetup ? options.afterRouterSetup : null;
+    public constructor(router: express.Router) {
+        this._router = router;
+        this._responseSerializer = new JsonSerializer();
     }
 
     registerRoute(url: string, method: string, controller: any, routeHandler: any) {
@@ -69,23 +57,5 @@ export class ExpressRouter implements RouterIntegration{
                 response.status(e.statusCode || 500).send(this._responseSerializer.serializeError(e.message || e));
             }
         });
-    }
-
-    beforeComponentScan(): void {
-        if(this._afterRouterSetup){
-            this._afterRouterSetup(this._app, this._router);
-        }
-
-        this._app.use(this._router);
-    }
-
-    afterComponentScan(): void {
-        if(this._beforeRouterSetup){
-            this._beforeRouterSetup(this._app);
-        }
-    }
-
-    setResponseSerializer(serializer: ResponseSerializer): void {
-        this._responseSerializer = serializer;
     }
 }
