@@ -17,14 +17,12 @@ export interface ResponseSerializer {
 
 export interface RouterIntegration {
     registerRoute(url: string, method: string, controller:any, routeHandler: string);
-    beforeComponentScan(): void;
-    afterComponentScan(): void;
-    setResponseSerializer(serializer: ResponseSerializer): void;
 }
 
 export class RouterRegistry {
     private static _instance: RouterRegistry;
-    private _defaultRouterImplementation: RouterIntegration;
+    private _activeRouterImplementation: RouterIntegration;
+    private routers: Map<string, RouterIntegration>;
 
     static getInstance(): RouterRegistry {
         if(!RouterRegistry._instance) {
@@ -34,22 +32,36 @@ export class RouterRegistry {
     }
 
     private constructor() {
-        this._defaultRouterImplementation = null;
+        this._activeRouterImplementation = null;
+        this.routers = new Map<string, RouterIntegration>();
     }
 
     /**
      *
+     * @param name
      * @param routerImplementation The router implementation which will be used by the Route annotations to register routes
+     * @param activate
      */
-    registerRouter(routerImplementation: RouterIntegration) {
-        this._defaultRouterImplementation = routerImplementation;
+    registerRouter(name: string, routerImplementation: RouterIntegration, activate?: boolean) {
+        this.routers.set(name, routerImplementation);
+        if(activate) {
+            this._activeRouterImplementation = routerImplementation;
+        }
+    }
+
+    activateRouter(name: string) {
+        if(!this.routers.has(name)) {
+            throw "Cannot find router: " + name;
+        }
+        this._activeRouterImplementation = this.routers.get(name);
     }
 
     getRouter(): RouterIntegration {
-        return this._defaultRouterImplementation;
+        return this._activeRouterImplementation;
     }
 
     clear() {
-        this._defaultRouterImplementation = null;
+        this._activeRouterImplementation = null;
+        this.routers.clear();
     }
 }
