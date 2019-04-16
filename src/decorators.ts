@@ -82,7 +82,12 @@ export function ApplicationConfiguration(): ClassDecorator {
 
 export function Inject(name?: string) {
     return function (target: Object, propertyKey: string | symbol, parameterIndex: number) {
-        Reflect.defineMetadata('Symbol(InjectArgs)', [name], target);
+        let injectArgs = [name];
+        const currentInjectArgs = Reflect.getMetadata('Symbol(InjectArgs)', target);
+        if(currentInjectArgs) {
+            injectArgs = injectArgs.concat(currentInjectArgs);
+        }
+        Reflect.defineMetadata('Symbol(InjectArgs)',injectArgs, target);
     }
 }
 
