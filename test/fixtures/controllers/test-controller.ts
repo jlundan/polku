@@ -1,15 +1,22 @@
 import {Controller, Route, RouteContext, Inject} from "../../../src/";
 import {TestService} from "../services/test-service";
+import {TestService2} from "../services/test-service-2";
 
 @Controller({
     prefix: "/"
 })
 export class TestController {
-    constructor(@Inject("TestService") private _testService: TestService) {
+    constructor(
+        @Inject("TestService") private _testService: TestService,
+        @Inject("TestService-2") private _testService2: TestService2
+    ) {
     }
 
     @Route({ "method": "get", "path": "/test" })
     private test () {
+        if(this._testService.getName() !== "TestService" || this._testService2.getName() !== "TestService-2") {
+            throw "Services not injected properly!";
+        }
         return {
             message: "test-controller-1"
         };

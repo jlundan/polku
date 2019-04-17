@@ -4,17 +4,15 @@ import * as uuidv4 from'uuid/v4';
 import {SubService2} from "./sub-service-2";
 
 @Service({
-    name: "TestService"
+    name: "TestService-2"
 })
-export class TestService {
+export class TestService2 {
     private _messages: Map<string, any>;
 
     constructor(
         @Inject("SubService") private _subService: SubService,
-        @Inject("SubService-2") private _subService2: SubService2
-    ) {
-        //console.log(this._subService);
-        //console.log(this._subService2);
+        @Inject("SubService-2") private _subService2: SubService2) {
+
         this._messages = new Map<string, any>();
     }
 
@@ -22,7 +20,7 @@ export class TestService {
         if(this._subService.getName() !== "SubService" || this._subService2.getName() !== "SubService-2") {
             throw "Sub services not injected properly!";
         }
-        return "TestService";
+        return "TestService-2";
     }
 
     echoMessage(message) {

@@ -18,31 +18,25 @@ describe('application-context', () => {
         ]);
     });
 
-    it('should return one controller- and two service component definitions', () => {
-        const componentNames = ["TestController", "TestService", "SubService"];
+    it('should return one controller- and four service component definitions', () => {
+        const componentNames = ["TestController", "TestService", "TestService-2", "SubService", "SubService-2"];
         const componentDefinitions = applicationContext.getComponentDefinitions(componentNames);
 
-        expect(componentDefinitions.length).to.eq(3);
+        expect(componentDefinitions.length).to.eq(5);
 
         expect(Reflect.getMetadata('Symbol(ComponentType)', componentDefinitions[0].componentSource)).to.eq("Controller");
         expect(Reflect.getMetadata('Symbol(ComponentType)', componentDefinitions[1].componentSource)).to.eq("Service");
         expect(Reflect.getMetadata('Symbol(ComponentType)', componentDefinitions[2].componentSource)).to.eq("Service");
+        expect(Reflect.getMetadata('Symbol(ComponentType)', componentDefinitions[3].componentSource)).to.eq("Service");
+        expect(Reflect.getMetadata('Symbol(ComponentType)', componentDefinitions[4].componentSource)).to.eq("Service");
 
         expect(componentDefinitions[0].instance).not.to.be.null;
         expect(componentDefinitions[1].instance).not.to.be.null;
         expect(componentDefinitions[2].instance).not.to.be.null;
+        expect(componentDefinitions[3].instance).not.to.be.null;
+        expect(componentDefinitions[4].instance).not.to.be.null;
     });
 
-    it('should return three components which are not null', () => {
-        const componentNames = ["TestController", "TestService", "SubService"];
-        const components = applicationContext.getComponents(componentNames);
-
-        expect(components.length).to.eq(3);
-
-        expect(components[0]).not.to.be.null;
-        expect(components[1]).not.to.be.null;
-        expect(components[2]).not.to.be.null;
-    });
 
     it('should return SubService', () => {
         const componentNames = ["SubService"];
@@ -59,8 +53,11 @@ describe('application-context', () => {
         const components = applicationContext.getComponents(componentNames);
         expect(components[0]).have.property("echoMessage");
         expect((typeof components[0].echoMessage)).to.eq("function");
+        //console.log(components[0]);
         expect(components[0]).have.property("_subService");
-        expect(components[0]._subService).not.to.be.null;
+        expect(components[0]._subService).not.to.be.undefined;
+        expect(components[0]).have.property("_subService2");
+        expect(components[0]._subService2).not.to.be.undefined;
         let obj = components[0].echoMessage("test");
         expect(obj).have.property("heading");
         expect(obj).have.property("message");
@@ -74,7 +71,9 @@ describe('application-context', () => {
         expect(components[0]).have.property("echo");
         expect((typeof components[0]['echo'])).to.eq("function");
         expect(components[0]).have.property("_testService");
-        expect(components[0]._testService).not.to.be.null;
+        expect(components[0]._testService).not.to.be.undefined;
+        expect(components[0]).have.property("_testService2");
+        expect(components[0]._testService2).not.to.be.undefined;
     });
 
     it('clears components', () => {
