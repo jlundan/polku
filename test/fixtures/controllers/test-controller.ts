@@ -39,4 +39,19 @@ export class TestController {
     private createNewMessage (ctx: RouteContext) {
         return this._testService.addMessage(ctx.request.body.message);
     }
+
+    @Route({ "method": "get", "path": "/api/messages/:id" })
+    private getMessage (ctx: RouteContext) {
+        return this._testService.getMessage(ctx.request.params['id']);
+    }
+
+    @Route({ "method": "put", "path": "/api/messages" })
+    private updateMessages (ctx: RouteContext) {
+        return this._testService.setMessages(ctx.request.body);
+    }
+
+    @Route({ "method": "delete", "path": "/api/messages/:id" })
+    private deleteMessage (ctx: RouteContext) {
+        return this._testService.deleteMessage(ctx.request.params['id']);
+    }
 }

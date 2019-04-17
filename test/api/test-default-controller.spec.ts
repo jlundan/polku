@@ -1,20 +1,15 @@
-import 'mocha';
-import "reflect-metadata";
-import * as bodyParser from "body-parser";
-import * as request from 'supertest';
-import * as express from "express";
-import * as http from "http";
-
-import { expect } from 'chai';
-import * as path from "path";
-
 import {RouterRegistry} from "../../src";
-import {DefaultExpressApplication, ExpressRouter} from "../../src/express/polku-express";
+import {DefaultExpressApplication} from "../../src/express/polku-express";
+import { expect } from 'chai';
+import * as request from 'supertest';
+import * as path from "path";
+import 'mocha';
 
 const TEST_PORT = 4444;
 
 describe('test-controller with default config', () => {
     let server;
+    let messageId;
 
     before(async () => {
         const componentScanPaths = [
@@ -22,21 +17,6 @@ describe('test-controller with default config', () => {
             path.join(__dirname, "..", "fixtures", "controllers")
         ];
         server = await new DefaultExpressApplication(componentScanPaths).start(TEST_PORT);
-
-
-        // return new Promise((resolve) => {
-        //     const componentScanPaths = [
-        //         path.join(__dirname, "..", "fixtures", "services"),
-        //         path.join(__dirname, "..", "fixtures", "controllers")
-        //     ];
-        //
-        //     const opts = {componentScan: componentScanPaths};
-        //
-        //     // new Application(opts).start().then((_server) => {
-        //     //     server = _server;
-        //     //     resolve();
-        //     // });
-        // });
     });
 
     it('should say hello', async () => {
@@ -57,7 +37,39 @@ describe('test-controller with default config', () => {
         const res = JSON.parse(result.text);
         expect(res.id).not.to.be.empty;
         expect(res.message).not.to.be.empty;
+        messageId = res.id;
     });
+
+    it('handles get correctly', async () => {
+        const result = await request(`http://localhost:${TEST_PORT}`).get(`/api/messages/${messageId}`);
+        expect(result.statusCode).to.eq(200);
+        const res = JSON.parse(result.text);
+        expect(res.id).to.eq(messageId);
+        expect(res.message).to.eq('test message');
+    });
+
+    it('handles put correctly', async () => {
+        const messages = [
+            {id: "111", message: "test message 111"},
+            {id: "222", message: "test message 222"}
+        ];
+        const result = await request(`http://localhost:${TEST_PORT}`).put(`/api/messages`).send(messages);
+        expect(result.statusCode).to.eq(200);
+        const res = JSON.parse(result.text);
+        expect(res[0].id).to.eq("111");
+        expect(res[1].id).to.eq("222");
+        expect(res[0].message).to.eq('test message 111');
+        expect(res[1].message).to.eq('test message 222');
+    });
+
+    it('handles delete correctly', async () => {
+        const result = await request(`http://localhost:${TEST_PORT}`).delete(`/api/messages/111`);
+        expect(result.statusCode).to.eq(200);
+        const res = JSON.parse(result.text);
+        expect(res.id).to.eq("111");
+        expect(res.message).to.eq('test message 111');
+    });
+
 
     after(() => {
         RouterRegistry.getInstance().clear();

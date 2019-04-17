@@ -13,8 +13,6 @@ export class TestService {
         @Inject("SubService") private _subService: SubService,
         @Inject("SubService-2") private _subService2: SubService2
     ) {
-        //console.log(this._subService);
-        //console.log(this._subService2);
         this._messages = new Map<string, any>();
     }
 
@@ -33,16 +31,22 @@ export class TestService {
     }
 
     addMessage(message: string) {
-        const messageId = uuidv4();
-        this._messages.set(messageId, message);
-        return {
-            id: messageId,
+        const msg = {
+            id: uuidv4(),
             message: message
         };
+        this._messages.set(msg.id, msg);
+        return msg;
     }
 
-    setMessages(message: string) {
-        this._messages.set(uuidv4(), message);
+    setMessages(messages: any[]) {
+        const newMessages = new Map<string, any>();
+        for(const message of messages) {
+            newMessages.set(message.id, message);
+        }
+        this._messages = newMessages;
+
+        return messages;
     }
 
     getMessage(id: string) {
@@ -63,20 +67,7 @@ export class TestService {
                 message: "Message not found"
             }
         }
-
-        return this._messages.delete(id);
-    }
-
-    getMessages(){
-        let msgs = [];
-
-        this._messages.forEach((value: string, key: string) => {
-            msgs.push({
-                id: key,
-                message: value
-            })
-        });
-
-        return msgs;
+        const deleted = this._messages.get(id);
+        return this._messages.delete(id) ? deleted : null;
     }
 }
