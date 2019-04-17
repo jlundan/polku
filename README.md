@@ -12,9 +12,19 @@ npm install polku
 Create file in the root of your project
 
 ```typescript
-import {Application} from "polku";
-const port = 3000;
-new Application({componentScan: __dirname}).start(port);
+import {DefaultExpressApplication} from "polku/express";
+import {Server} from "http";
+import {AddressInfo} from "net";
+
+const componentScanPaths = [__dirname];
+
+new DefaultExpressApplication(componentScanPaths).start(3000).then((server: Server) => {
+    console.log(`Server listening at port ${(server.address() as AddressInfo).port}`);
+
+    setTimeout(() => {
+        server.close();
+    }, 5000)
+});
 ```
 
 ## Specifying controllers
