@@ -1,11 +1,11 @@
-import {RouterIntegration, RouteContext, ResponseSerializer, RouterRegistry} from "../router-registry";
+import {RouterIntegration, RouteContext, ResponseSerializer, RouterRegistry} from "../core/router-registry";
 import {JsonSerializer} from "../response-serializers/json-serializer";
 
 import * as express from "express";
 import * as path from "path";
 import * as http from "http";
 import * as bodyParser from "body-parser";
-import {ApplicationContext} from "../application-context";
+import {ApplicationContext} from "../core/application-context";
 import {Server} from "http";
 
 export class ExpressRouter implements RouterIntegration{

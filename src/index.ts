@@ -1,3 +1,3 @@
-export * from './application-context';
-export * from './router-registry';
-export * from "./decorators";
+export * from './core/application-context';
+export * from './core/router-registry';
+export * from "./core/decorators";

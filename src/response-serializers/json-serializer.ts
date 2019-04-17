@@ -1,4 +1,4 @@
-import {ResponseSerializer} from "../router-registry";
+import {ResponseSerializer} from "../core/router-registry";
 
 export class JsonSerializer implements ResponseSerializer{
     serializeResponse(response: any): string {
