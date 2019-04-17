@@ -1,4 +1,4 @@
-import {Service, Inject} from "../../../src/";
+import {Service, Inject} from "../../..";
 import {SubService} from "./sub-service";
 import * as uuidv4 from'uuid/v4';
 import {SubService2} from "./sub-service-2";

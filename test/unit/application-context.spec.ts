@@ -2,7 +2,7 @@ import 'mocha';
 import "reflect-metadata";
 import * as path from "path";
 import { expect } from 'chai';
-import {ApplicationContext, RouterRegistry} from "../../src";
+import {ApplicationContext, RouterRegistry} from "../../index";
 import {DummyRouterIntegration} from "./dummy-router-integration";
 
 describe('application-context', () => {

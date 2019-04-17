@@ -1,4 +1,4 @@
-import {Controller, Route} from "../../../src/";
+import {Controller, Route} from "../../../";
 
 @Controller({
     prefix: "/"

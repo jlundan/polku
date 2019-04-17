@@ -1,4 +1,4 @@
-import {Controller, Route, RouteContext, Inject} from "../../../src/";
+import {Controller, Route, RouteContext, Inject} from "../../../";
 import {TestService} from "../services/test-service";
 import {TestService2} from "../services/test-service-2";
 

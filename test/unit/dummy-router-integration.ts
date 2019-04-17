@@ -1,4 +1,4 @@
-import {RouterIntegration} from "../../src";
+import {RouterIntegration} from "../../index";
 
 export class DummyRouterIntegration implements RouterIntegration{
 

@@ -1,5 +1,5 @@
-import {ApplicationContext, RouterRegistry} from "../../src";
-import {ExpressRouter} from "../../src/express/polku-express";
+import {ApplicationContext, RouterRegistry} from "../../core";
+import {ExpressRouter} from "../../express";
 import { expect } from 'chai';
 
 import * as helmet from "helmet";

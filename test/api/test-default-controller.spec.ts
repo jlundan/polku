@@ -1,5 +1,5 @@
-import {RouterRegistry} from "../../src";
-import {DefaultExpressApplication} from "../../src/express";
+import {RouterRegistry} from "../../core";
+import {DefaultExpressApplication} from "../../express";
 import { expect } from 'chai';
 import * as request from 'supertest';
 import * as path from "path";

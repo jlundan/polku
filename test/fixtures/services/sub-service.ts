@@ -1,4 +1,4 @@
-import {Service} from "../../../src/";
+import {Service} from "../../../";
 
 @Service({
     name: "SubService"

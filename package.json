@@ -25,7 +25,7 @@
     "README.md"
   ],
   "homepage": "https://github.com/jlundan/polku#readme",
-  "main": "src/index.js",
+  "main": "index.js",
   "dependencies": {
     "reflect-metadata": "^0.1.12",
     "express": "^4.16.4",
