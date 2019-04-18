@@ -20,7 +20,14 @@
     "url": "https://github.com/jlundan/polku/issues"
   },
   "files": [
-    "dist/src/",
+    "core/**/*.js",
+    "express/**/*.js",
+    "response-serializers/**/*.js",
+    "index.js",
+    "core/**/*.d.ts",
+    "express/**/*.d.ts",
+    "response-serializers/**/*.d.ts",
+    "index.d.ts",
     "package.json",
     "README.md"
   ],
