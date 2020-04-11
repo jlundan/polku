@@ -1,3 +1,7 @@
+# This project is archived
+
+This project is no longer maintained and thus is archived. Please check out other alternatives, such as https://github.com/nestjs/nest
+
 # Introduction
  
 Polku originates from Finnish, meaning _path_ or _route_, and is a NodeJS library which focuses on defining APIs using typescript decorators.
